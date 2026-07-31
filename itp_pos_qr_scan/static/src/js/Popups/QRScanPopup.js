@@ -15,16 +15,20 @@ export class QRScanPopup extends Component {
             loading: true,
             active_camera: null,
             videoDevices: [],
+            permissionState: "pending", // 'pending' | 'granted' | 'denied' | 'error'
+            permissionError: "",
         });
 
         this.videoElement = useRef("preview");
         this.canvas = useRef("canvas");
+        this.fileInput = useRef("fileInput");
+
         this.captureTimeout = 700;
         this.stream = null;
         this.gCtx = null;
 
         onMounted(() => {
-            this.onMounted();
+            this.requestCameraPermission();
         });
 
         onWillUnmount(() => {
@@ -57,30 +61,62 @@ export class QRScanPopup extends Component {
         }
     }
 
-    async onClickCameraButton(deviceId) {
-        this.startWebCam(deviceId);
-        if (this.pos && this.pos.db) {
-            this.pos.db.save("active_camera_id", deviceId);
+    onTriggerFileInput() {
+        if (this.fileInput && this.fileInput.el) {
+            this.fileInput.el.click();
         }
     }
 
-    async onMounted() {
-        if (!this.isBrowserSupported) return;
+    onFileSelected(event) {
+        const file = event.target.files && event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                this.initCanvas(800, 600);
+                if (this.gCtx) {
+                    this.gCtx.drawImage(img, 0, 0, 800, 600);
+                    if (typeof window.qrcode !== "undefined") {
+                        try {
+                            window.qrcode.callback = (value) => this.read(value);
+                            window.qrcode.decode();
+                        } catch (err) {
+                            console.error(err);
+                            if (this.popup) {
+                                this.popup.add("ErrorPopup", {
+                                    title: "QR Decode Error",
+                                    body: "Could not decode QR code from the uploaded image. Please ensure the QR code is clearly visible.",
+                                });
+                            }
+                        }
+                    }
+                }
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    async requestCameraPermission() {
+        if (!this.isBrowserSupported) {
+            this.state.loading = false;
+            this.state.permissionState = "error";
+            this.state.permissionError = "Camera API is not supported by your browser or requires an HTTPS connection.";
+            return;
+        }
+
         this.state.loading = true;
+        this.state.permissionError = "";
 
         try {
-            await navigator.mediaDevices.getUserMedia({ audio: false, video: true });
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: false, video: true });
+            stream.getTracks().forEach((track) => track.stop());
+
+            this.state.permissionState = "granted";
             const devices = await navigator.mediaDevices.enumerateDevices();
             const video_devices = devices.filter((d) => d.kind === "videoinput");
-
-            if (video_devices.some((device) => !device.deviceId)) {
-                if (this.popup) {
-                    this.popup.add("ErrorPopup", {
-                        body: "Browser returns empty device IDs. Perhaps you need to use HTTPS connection?",
-                    });
-                }
-                return;
-            }
 
             this.state.videoDevices = video_devices;
             let deviceId = video_devices.length ? video_devices[0].deviceId : false;
@@ -104,13 +140,23 @@ export class QRScanPopup extends Component {
                 this.startWebCam(deviceId, facingMode);
             }
         } catch (error) {
-            console.error(error);
+            console.error("Camera permission error:", error);
             this.state.loading = false;
-            if (this.popup) {
-                this.popup.add("ErrorPopup", {
-                    body: error.message || String(error),
-                });
+            this.state.permissionState = "denied";
+            if (error.name === "NotAllowedError" || error.name === "PermissionDeniedError") {
+                this.state.permissionError = "Camera permission was denied. Please allow camera access in your browser location bar or upload an image file.";
+            } else if (error.name === "NotFoundError" || error.name === "DevicesNotFoundError") {
+                this.state.permissionError = "No camera device was found on this system. You can upload a QR image file below.";
+            } else {
+                this.state.permissionError = error.message || "Could not access camera device. You can upload a QR image file below.";
             }
+        }
+    }
+
+    async onClickCameraButton(deviceId) {
+        this.startWebCam(deviceId);
+        if (this.pos && this.pos.db) {
+            this.pos.db.save("active_camera_id", deviceId);
         }
     }
 
@@ -149,12 +195,9 @@ export class QRScanPopup extends Component {
                 this.success(stream);
             })
             .catch((error) => {
-                if (this.popup) {
-                    this.popup.add("ErrorPopup", {
-                        title: (error.name || "") + " " + (error.code || ""),
-                        body: error.message || String(error),
-                    });
-                }
+                console.error("Camera start error:", error);
+                this.state.permissionState = "error";
+                this.state.permissionError = error.message || "Failed to start camera feed.";
             });
 
         setTimeout(() => this.captureToCanvas(), this.captureTimeout);
@@ -197,5 +240,6 @@ export class QRScanPopup extends Component {
         this.gCtx = gCtx;
     }
 }
+
 
 
