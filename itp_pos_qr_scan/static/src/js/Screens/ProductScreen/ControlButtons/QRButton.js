@@ -1,13 +1,8 @@
 /** @odoo-module **/
 
 import { Component } from "@odoo/owl";
-import { ProductScreen } from "@point_of_sale/app/screens/product_screen/product_screen";
-
 import { useService } from "@web/core/utils/hooks";
 import { QRScanPopup } from "../../Popups/QRScanPopup";
-
-
-
 
 export class QRButton extends Component {
     static template = "itp_pos_qr_scan.QRButton";
@@ -22,10 +17,31 @@ export class QRButton extends Component {
     }
 }
 
-ProductScreen.addControlButton({
-    component: QRButton,
-    condition: function () {
-        return true;
-    },
-});
+function registerQRButton() {
+    let ProductScreen = null;
+    if (window.odoo && window.odoo.loader && window.odoo.loader.modules) {
+        for (const [name, mod] of window.odoo.loader.modules) {
+            if (name.includes("product_screen") && mod && mod.ProductScreen) {
+                ProductScreen = mod.ProductScreen;
+                break;
+            }
+        }
+    }
+
+    if (ProductScreen && typeof ProductScreen.addControlButton === "function") {
+        ProductScreen.addControlButton({
+            component: QRButton,
+            condition: function () {
+                return true;
+            },
+        });
+    }
+}
+
+if (document.readyState === "complete" || document.readyState === "interactive") {
+    setTimeout(registerQRButton, 100);
+} else {
+    window.addEventListener("DOMContentLoaded", () => setTimeout(registerQRButton, 100));
+}
+
 
