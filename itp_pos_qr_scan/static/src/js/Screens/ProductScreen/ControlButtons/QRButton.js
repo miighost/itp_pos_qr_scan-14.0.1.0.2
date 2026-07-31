@@ -2,7 +2,6 @@
 
 import { Component } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
-import { QRScanPopup } from "../../Popups/QRScanPopup";
 
 export class QRButton extends Component {
     static template = "itp_pos_qr_scan.QRButton";
@@ -13,7 +12,19 @@ export class QRButton extends Component {
     }
 
     async onClick() {
-        await this.popup.add(QRScanPopup, {});
+        let QRScanPopup = null;
+        if (window.odoo && window.odoo.loader && window.odoo.loader.modules) {
+            for (const [name, mod] of window.odoo.loader.modules) {
+                if ((name.includes("QRScanPopup") || name.includes("qr_scan_popup")) && mod && mod.QRScanPopup) {
+                    QRScanPopup = mod.QRScanPopup;
+                    break;
+                }
+            }
+        }
+
+        if (QRScanPopup && this.popup) {
+            await this.popup.add(QRScanPopup, {});
+        }
     }
 }
 
@@ -43,5 +54,6 @@ if (document.readyState === "complete" || document.readyState === "interactive")
 } else {
     window.addEventListener("DOMContentLoaded", () => setTimeout(registerQRButton, 100));
 }
+
 
 

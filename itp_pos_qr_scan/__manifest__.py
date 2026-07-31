@@ -36,10 +36,11 @@
             "itp_pos_qr_scan/static/lib/jsqrcode/alignpat.js",
             "itp_pos_qr_scan/static/lib/jsqrcode/databr.js",
             "itp_pos_qr_scan/static/src/js/qr_scan.js",
-            "itp_pos_qr_scan/static/src/js/Screens/ProductScreen/ControlButtons/QRButton.js",
             "itp_pos_qr_scan/static/src/js/Popups/QRScanPopup.js",
-            "itp_pos_qr_scan/static/src/xml/Screens/ProductScreen/ControlButtons/QRButton.xml",
+            "itp_pos_qr_scan/static/src/js/Screens/ProductScreen/ControlButtons/QRButton.js",
             "itp_pos_qr_scan/static/src/xml/Popups/QRScanPopup.xml",
+            "itp_pos_qr_scan/static/src/xml/Screens/ProductScreen/ControlButtons/QRButton.xml",
+
         ],
         "point_of_sale.assets": [
             "itp_pos_qr_scan/static/src/css/pos.css",
@@ -61,10 +62,11 @@
             "itp_pos_qr_scan/static/lib/jsqrcode/alignpat.js",
             "itp_pos_qr_scan/static/lib/jsqrcode/databr.js",
             "itp_pos_qr_scan/static/src/js/qr_scan.js",
-            "itp_pos_qr_scan/static/src/js/Screens/ProductScreen/ControlButtons/QRButton.js",
             "itp_pos_qr_scan/static/src/js/Popups/QRScanPopup.js",
-            "itp_pos_qr_scan/static/src/xml/Screens/ProductScreen/ControlButtons/QRButton.xml",
+            "itp_pos_qr_scan/static/src/js/Screens/ProductScreen/ControlButtons/QRButton.js",
             "itp_pos_qr_scan/static/src/xml/Popups/QRScanPopup.xml",
+            "itp_pos_qr_scan/static/src/xml/Screens/ProductScreen/ControlButtons/QRButton.xml",
+
         ],
         "point_of_sale.assets_pos": [
             "itp_pos_qr_scan/static/src/css/pos.css",
@@ -86,10 +88,11 @@
             "itp_pos_qr_scan/static/lib/jsqrcode/alignpat.js",
             "itp_pos_qr_scan/static/lib/jsqrcode/databr.js",
             "itp_pos_qr_scan/static/src/js/qr_scan.js",
-            "itp_pos_qr_scan/static/src/js/Screens/ProductScreen/ControlButtons/QRButton.js",
             "itp_pos_qr_scan/static/src/js/Popups/QRScanPopup.js",
-            "itp_pos_qr_scan/static/src/xml/Screens/ProductScreen/ControlButtons/QRButton.xml",
+            "itp_pos_qr_scan/static/src/js/Screens/ProductScreen/ControlButtons/QRButton.js",
             "itp_pos_qr_scan/static/src/xml/Popups/QRScanPopup.xml",
+            "itp_pos_qr_scan/static/src/xml/Screens/ProductScreen/ControlButtons/QRButton.xml",
+
         ],
         "point_of_sale._assets_pos": [
             "itp_pos_qr_scan/static/src/css/pos.css",
@@ -111,10 +114,11 @@
             "itp_pos_qr_scan/static/lib/jsqrcode/alignpat.js",
             "itp_pos_qr_scan/static/lib/jsqrcode/databr.js",
             "itp_pos_qr_scan/static/src/js/qr_scan.js",
-            "itp_pos_qr_scan/static/src/js/Screens/ProductScreen/ControlButtons/QRButton.js",
             "itp_pos_qr_scan/static/src/js/Popups/QRScanPopup.js",
-            "itp_pos_qr_scan/static/src/xml/Screens/ProductScreen/ControlButtons/QRButton.xml",
+            "itp_pos_qr_scan/static/src/js/Screens/ProductScreen/ControlButtons/QRButton.js",
             "itp_pos_qr_scan/static/src/xml/Popups/QRScanPopup.xml",
+            "itp_pos_qr_scan/static/src/xml/Screens/ProductScreen/ControlButtons/QRButton.xml",
+
         ],
     },
 
