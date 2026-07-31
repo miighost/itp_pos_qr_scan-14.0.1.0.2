@@ -1,10 +1,9 @@
 /** @odoo-module **/
 
-import { AbstractAwaitablePopup } from "@point_of_sale/app/popup/abstract_awaitable_popup";
-import { useState, useRef, onMounted, onWillUnmount } from "@odoo/owl";
+import { Component, useState, useRef, onMounted, onWillUnmount } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 
-export class QRScanPopup extends AbstractAwaitablePopup {
+export class QRScanPopup extends Component {
     static template = "itp_pos_qr_scan.QRScanPopup";
 
     setup() {
@@ -51,7 +50,11 @@ export class QRScanPopup extends AbstractAwaitablePopup {
 
     async onClickCancel() {
         this.stopCamera();
-        await this.cancel();
+        if (this.props && typeof this.props.close === "function") {
+            this.props.close();
+        } else if (this.props && typeof this.props.cancel === "function") {
+            this.props.cancel();
+        }
     }
 
     async onClickCameraButton(deviceId) {
@@ -71,9 +74,11 @@ export class QRScanPopup extends AbstractAwaitablePopup {
             const video_devices = devices.filter((d) => d.kind === "videoinput");
 
             if (video_devices.some((device) => !device.deviceId)) {
-                this.popup.add("ErrorPopup", {
-                    body: "Browser returns empty device IDs. Perhaps you need to use HTTPS connection?",
-                });
+                if (this.popup) {
+                    this.popup.add("ErrorPopup", {
+                        body: "Browser returns empty device IDs. Perhaps you need to use HTTPS connection?",
+                    });
+                }
                 return;
             }
 
@@ -101,9 +106,11 @@ export class QRScanPopup extends AbstractAwaitablePopup {
         } catch (error) {
             console.error(error);
             this.state.loading = false;
-            this.popup.add("ErrorPopup", {
-                body: error.message || String(error),
-            });
+            if (this.popup) {
+                this.popup.add("ErrorPopup", {
+                    body: error.message || String(error),
+                });
+            }
         }
     }
 
@@ -111,10 +118,15 @@ export class QRScanPopup extends AbstractAwaitablePopup {
         if (this.pos && this.pos.debug) {
             console.log("QR scanned", result);
         }
-        if (this.env.bus) {
+        if (this.env && this.env.bus) {
             this.env.bus.trigger("qr_scanned", result);
         }
-        this.onClickCancel();
+        this.stopCamera();
+        if (this.props && typeof this.props.confirm === "function") {
+            this.props.confirm({ confirmed: true, payload: result });
+        } else if (this.props && typeof this.props.close === "function") {
+            this.props.close();
+        }
     }
 
     startWebCam(deviceId, facingMode) {
@@ -137,10 +149,12 @@ export class QRScanPopup extends AbstractAwaitablePopup {
                 this.success(stream);
             })
             .catch((error) => {
-                this.popup.add("ErrorPopup", {
-                    title: (error.name || "") + " " + (error.code || ""),
-                    body: error.message || String(error),
-                });
+                if (this.popup) {
+                    this.popup.add("ErrorPopup", {
+                        title: (error.name || "") + " " + (error.code || ""),
+                        body: error.message || String(error),
+                    });
+                }
             });
 
         setTimeout(() => this.captureToCanvas(), this.captureTimeout);
@@ -183,4 +197,5 @@ export class QRScanPopup extends AbstractAwaitablePopup {
         this.gCtx = gCtx;
     }
 }
+
 
