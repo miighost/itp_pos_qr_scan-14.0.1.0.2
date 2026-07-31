@@ -18,6 +18,12 @@
     "external_dependencies": {"python": [], "bin": []},
     "data": ["wizard/pos_payment_views.xml"],
     "assets": {
+        "point_of_sale.assets_prod": [
+            "itp_pos_qr_payments/static/src/js/itp_pos_qr_payments.js",
+        ],
+        "point_of_sale.assets": [
+            "itp_pos_qr_payments/static/src/js/itp_pos_qr_payments.js",
+        ],
         "point_of_sale.assets_pos": [
             "itp_pos_qr_payments/static/src/js/itp_pos_qr_payments.js",
         ],
@@ -25,6 +31,7 @@
             "itp_pos_qr_payments/static/src/js/itp_pos_qr_payments.js",
         ],
     },
+
 
     "demo": [],
     "auto_install": False,
