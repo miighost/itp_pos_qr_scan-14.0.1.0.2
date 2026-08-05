@@ -2,6 +2,7 @@
 
 import { Component } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
+import { registry } from "@web/core/registry";
 
 export class QRButton extends Component {
     static template = "itp_pos_qr_scan.QRButton";
@@ -28,7 +29,15 @@ export class QRButton extends Component {
     }
 }
 
-function registerQRButton() {
+// Odoo 19 POS Control Buttons Registry Registration
+registry.category("control_buttons").add("QRButton", {
+    component: QRButton,
+    condition: function () {
+        return true;
+    },
+});
+
+function registerQRButtonFallback() {
     let ProductScreen = null;
     if (window.odoo && window.odoo.loader && window.odoo.loader.modules) {
         for (const [name, mod] of window.odoo.loader.modules) {
@@ -50,10 +59,11 @@ function registerQRButton() {
 }
 
 if (document.readyState === "complete" || document.readyState === "interactive") {
-    setTimeout(registerQRButton, 100);
+    setTimeout(registerQRButtonFallback, 100);
 } else {
-    window.addEventListener("DOMContentLoaded", () => setTimeout(registerQRButton, 100));
+    window.addEventListener("DOMContentLoaded", () => setTimeout(registerQRButtonFallback, 100));
 }
+
 
 
 
